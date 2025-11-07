@@ -37,8 +37,10 @@ if(!empty($_POST)){
             ':expires' => ($token[1] instanceof  DateTimeImmutable) ? $token[1]->format("Y-m-d H:i:s") : $token[1],
         ]);
 
-        $urlto = urldecode($url . "confirm_verification.php?token=" . $token[0]);
-        sendVerificationMail($_POST['email'], $_POST['username'], $urlto);
+        if($token[0]) {
+            $urlto = urldecode($url . "confirm_verification.php?token=" . $token[0]);
+            sendVerificationMail($_POST['email'], $_POST['username'], $urlto);
+        }
     }
 }
 ?>

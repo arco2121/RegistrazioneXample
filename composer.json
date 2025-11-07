@@ -1,0 +1,12 @@
+{
+    "name": "10934253/registrazione-xample",
+    "autoload": {
+        "psr-4": {
+            "10934253\\RegistrazioneXample\\": "src/"
+        }
+    },
+    "require": {
+        "phpmailer/phpmailer": "^7.0",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

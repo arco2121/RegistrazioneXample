@@ -9,7 +9,7 @@ body
 {
     margin: 0 auto;
 }
-div,form
+.div,form
 {
     display: flex;
     flex-direction: column;

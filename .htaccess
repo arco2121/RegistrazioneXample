@@ -1,0 +1,21 @@
+RewriteEngine on
+
+RewriteBase /RegistrazioneXample/
+
+DirectoryIndex index.php
+
+
+#Regole routing
+RewriteRule ^/?$ index.php [L,QSA]
+RewriteRule ^reg/?$ registrazione.php [L,QSA]
+RewriteRule ^conf/?$ confirm_verification.php [L,QSA]
+
+
+
+# Se richiedo un file (-f) o una directory (-d) la serve
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Tutti gli altri casi redirect su index.php con query string append [QSA]
+RewriteRule ^(.*)$ index.php [L,QSA]

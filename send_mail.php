@@ -26,7 +26,7 @@ function sendVerificationMail($toAddress, $toName, $tourl) {
 
         // Content
         $mail->isHTML(true);
-        $mail->Body = "Hi ". $toName ."\nCode for the verification : " . $tourl;
+        $mail->Body = "Hi ". $toName ."\nCode for the verification : <a href='" . $tourl . "' target='_blank'>" . "Clicca qui" . "</a>";
         $mail->send();
     } catch (Exception $e) {
         echo "Mailer Error: {$mail->ErrorInfo}";

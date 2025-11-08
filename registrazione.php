@@ -24,22 +24,28 @@ if(!empty($_POST)){
 
     if(empty($errors)){
         require_once "email_verification_service.php";
+        require_once "send_mail.php";
         $token = generateEmailVerificationToken();
-        $stat = $pdo->prepare("INSERT INTO utenti (username, password, nome, cognome, email, verification_token, verification_expires) 
+        try {
+            $stat = $pdo->prepare("INSERT INTO utenti (username, password, nome, cognome, email, verification_token, verification_expires) 
                                 VALUES (:username, :password,:nome,:cognome, :email, :token, :expires)");
-        $stat->execute([
-            ':username' => $_POST['username'],
-            ':password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
-            ':nome' => $_POST['nome'],
-            ':cognome' => $_POST['cognome'],
-            ':email' => $_POST['email'],
-            ':token' => $token[0],
-            ':expires' => ($token[1] instanceof  DateTimeImmutable) ? $token[1]->format("Y-m-d H:i:s") : $token[1],
-        ]);
+            $stat->execute([
+                    ':username' => $_POST['username'],
+                    ':password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
+                    ':nome' => $_POST['nome'],
+                    ':cognome' => $_POST['cognome'],
+                    ':email' => $_POST['email'],
+                    ':token' => $token[0],
+                    ':expires' => ($token[1] instanceof  DateTimeImmutable) ? $token[1]->format("Y-m-d H:i:s") : $token[1],
+            ]);
 
-        if($token[0]) {
-            $urlto = urldecode($url . "confirm_verification.php?token=" . $token[0]);
-            sendVerificationMail($_POST['email'], $_POST['username'], $urlto);
+            if($token[0]) {
+                $urlto = $url."conf?token=".urlencode($token[0]);
+                sendVerificationMail($_POST['email'], $_POST['username'], $urlto);
+            }
+        }
+        catch(PDOException $e){
+            echo "<p>".$e->getMessage()."</p>";
         }
     }
 }
@@ -55,42 +61,49 @@ if(!empty($_POST)){
     <title>Registrazione</title>
 </head>
 <body>
-<div>
-    <?php if(!empty($errors)) {
-        echo "<p>";
-        foreach ($errors as $error) {
-            echo $error."<br>";
-        }
-        echo "</p>";
-    } ?>
+<div class="div">
     <h1>Sign Up</h1>
     <form action="" method="post">
-        <div class="row">
+        <div class="div row">
             <label for="email">Email : </label>
             <input type="email" name="email" id="email" required placeholder="email">
         </div>
-        <div class="row">
+        <div class="div row">
             <label for="user">Username : </label>
             <input type="text" name="username" id="user" required placeholder="username">
         </div>
-        <div class="row">
+        <div class="div row">
             <label for="name">Name : </label>
             <input type="text" name="nome" id="name" required placeholder="name">
         </div>
-        <div class="row">
+        <div class="div row">
             <label for="surname">Surname : </label>
             <input type="text" name="cognome" id="surname" required placeholder="surname">
         </div>
-        <div class="row">
+        <div class="div row">
             <label for="password">Password : </label>
             <input type="password" name="password" id="password" required placeholder="password">
         </div>
-        <div class="row">
+        <div class="div row">
             <label for="password">Confirm password : </label>
             <input type="password" name="password2" id="password" required placeholder="password">
         </div>
         <input type="submit" value="Create">
     </form>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        <?php if(!empty($errors)) { ?>
+        Swal.fire({
+            title: 'Invalid Input',
+            text: '<?php foreach ($errors as $error) {
+                echo $error . ",";
+            }
+            ?>',
+            icon: 'error',
+            confirmButtonText: 'Oki'
+        })
+        <?php } ?>
+    </script>
 </div>
 </body>
 </html>
